@@ -47,6 +47,12 @@ opt.fillchars:append({ diff = "/" })
 opt.ignorecase = true
 -- 検索語に大文字が含まれる場合は、大文字と小文字を区別する。
 opt.smartcase = true
+-- :find でサブディレクトリも再帰的に探す。
+opt.path:append("**")
+-- コマンドライン補完で、まず共通部分を補い、続けて候補を切り替える。
+opt.wildmode = "longest:full,full"
+-- 補完候補から依存パッケージやビルド生成物を除く。
+opt.wildignore:append({ "*/node_modules/*", "*.o", "*.obj", "*.pyc", "*.class", "*.jar" })
 
 -- ファイル内のタブ文字を2桁幅で表示する。
 opt.tabstop = 2
@@ -59,8 +65,18 @@ opt.expandtab = true
 -- 改行時に、波括弧などをもとに字下げを調整する。
 opt.smartindent = true
 
+-- スワップファイルと上書き前の一時バックアップを作らない。
+opt.swapfile = false
+opt.writebackup = false
 -- 保存時に undo 履歴を記録し、ファイルを開き直しても u で戻せるようにする。
 opt.undofile = true
+opt.undodir = vim.fn.expand("~/.cache/nvim/undodir")
+-- 操作が止まってから CursorHold が発生するまでの時間を300ミリ秒にする。
+opt.updatetime = 300
+-- キーマップの続きは500ミリ秒待ち、端末のキーコードの続きは待たない。
+opt.timeoutlen = 500
+opt.ttimeoutlen = 0
+
 -- 上下に分割したとき、新しいウィンドウを下に開く。
 opt.splitbelow = true
 -- 左右に分割したとき、新しいウィンドウを右に開く。
