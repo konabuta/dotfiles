@@ -1,0 +1,68 @@
+tap "d-kuro/tap"
+tap "heroku/brew"
+
+brew "fish"
+brew "chezmoi"
+brew "tmux"
+brew "herdr"
+
+brew "gh"
+brew "lazygit"
+brew "tig"
+brew "git-delta"
+brew "d-kuro/tap/gwq"
+
+brew "neovim"
+brew "stylua"
+brew "tree-sitter-cli"
+brew "ripgrep"
+brew "rsync"
+brew "jq"
+brew "eza"
+brew "bat"
+brew "fd"
+brew "fzf"
+brew "btop"
+brew "tree"
+brew "wget"
+brew "sqlite"
+brew "ffmpeg"
+brew "awscli"
+brew "heroku"
+
+# Package managers
+brew "mise"
+brew "apm"
+
+# React Native
+brew "watchman"
+
+cask "1password"
+cask "1password-cli"
+cask "ghostty"
+cask "karabiner-elements"
+cask "keyboard-maestro"
+cask "raycast"
+cask "transmit"
+cask "claude-code@latest"
+cask "chatgpt"
+cask "cleanshot"
+cask "raindropio"
+
+# Browsers
+cask "google-chrome"
+cask "zen"
+
+# Editors
+cask "sublime-text"
+cask "zed"
+cask "android-studio"
+
+# Fonts
+cask "font-plemol-jp-nf"
+cask "font-blex-mono-nerd-font"
+cask "font-hack-nerd-font"
+
+# Other tools
+cask "imageoptim"
+cask "numi"
