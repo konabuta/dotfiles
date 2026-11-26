@@ -81,3 +81,39 @@ opt.ttimeoutlen = 0
 opt.splitbelow = true
 -- 左右に分割したとき、新しいウィンドウを右に開く。
 opt.splitright = true
+
+-- Tree-sitter が解析した構文に沿って折りたたみ範囲を決める。
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- ファイルを開いたときは折りたたみを開いておき、必要な箇所だけ zc で閉じる。
+opt.foldlevel = 99
+
+-- 短い通知は画面右下に表示し、長い出力はスクロールできるペインに送る。
+require("vim._core.ui2").enable({
+	msg = {
+		target = "msg",
+		targets = {
+			-- 入力したコマンドの出力は種類に関係なく、次のキー入力まで下部に表示する。
+			typed_cmd = "cmd",
+			emsg = "pager",
+			echoerr = "pager",
+			lua_error = "pager",
+			rpc_error = "pager",
+			list_cmd = "pager",
+			verbose = "pager",
+			shell_cmd = "pager",
+			shell_err = "pager",
+			shell_out = "pager",
+			shell_ret = "pager",
+			progress = "pager",
+			search_cmd = "cmd",
+			search_count = "cmd",
+			completion = "cmd",
+			wildlist = "cmd",
+			confirm = "cmd",
+		},
+		cmd = { height = 0.5 },
+		msg = { height = 0.3, timeout = 5000 },
+		pager = { height = 0.5 },
+	},
+})
