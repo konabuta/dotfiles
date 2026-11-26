@@ -1,0 +1,69 @@
+name: Dotfiles CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate dotfiles
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Install check tools
+        env:
+          NEOVIM_VERSION: v0.12.6
+          STYLUA_VERSION: v2.6.0
+        run: |
+          sudo apt-get update
+          sudo apt-get install --no-install-recommends -y fish
+          curl --fail --location --silent --show-error \
+            "https://github.com/neovim/neovim/releases/download/$NEOVIM_VERSION/nvim-linux-x86_64.tar.gz" \
+            --output "$RUNNER_TEMP/neovim.tar.gz"
+          tar -xzf "$RUNNER_TEMP/neovim.tar.gz" -C "$RUNNER_TEMP"
+          curl --fail --location --silent --show-error \
+            "https://github.com/JohnnyMorganz/StyLua/releases/download/$STYLUA_VERSION/stylua-linux-x86_64.zip" \
+            --output "$RUNNER_TEMP/stylua.zip"
+          unzip -q "$RUNNER_TEMP/stylua.zip" -d "$RUNNER_TEMP/stylua"
+          printf '%s\n' "$RUNNER_TEMP/nvim-linux-x86_64/bin" "$RUNNER_TEMP/stylua" >> "$GITHUB_PATH"
+
+      - name: Check formatting and syntax
+        run: |
+          stylua --check dot_config/nvim
+          fish --no-execute dot_config/private_fish/config.fish
+          fish --no-execute dot_config/private_fish/config-mac.fish
+          ruby -c dot_config/Brewfile
+          python3 - <<'PY'
+          import json
+          import tomllib
+          from pathlib import Path
+
+          with Path("dot_config/private_karabiner/private_karabiner.json").open() as config:
+              json.load(config)
+          with Path("dot_config/herdr/config.toml").open("rb") as config:
+              tomllib.load(config)
+          PY
+
+      - name: Start Neovim with a fresh profile
+        run: |
+          export XDG_CONFIG_HOME="$RUNNER_TEMP/nvim-profile/config"
+          export XDG_DATA_HOME="$RUNNER_TEMP/nvim-profile/data"
+          export XDG_STATE_HOME="$RUNNER_TEMP/nvim-profile/state"
+          export XDG_CACHE_HOME="$RUNNER_TEMP/nvim-profile/cache"
+          mkdir -p "$XDG_CONFIG_HOME"
+          cp -R dot_config/nvim "$XDG_CONFIG_HOME/nvim"
+          nvim --headless -i NONE \
+            '+if !empty(v:errmsg) || empty(maparg("ss", "n")) | cquit | endif' \
+            +qa </dev/null
