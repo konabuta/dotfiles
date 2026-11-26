@@ -44,7 +44,13 @@ jobs:
           printf '%s\n' "$RUNNER_TEMP/nvim-linux-x86_64/bin" "$RUNNER_TEMP/stylua" >> "$GITHUB_PATH"
 
       - name: Check formatting and syntax
-        # macOS 用の設定も、Ubuntu 上でファイルの構文を確認する。
+        # リポジトリ内の検証対象とチェック方法
+        # - dot_config/nvim/init.lua と dot_config/nvim/lua/ 配下の Lua を StyLua で整形チェック
+        # - dot_config/private_fish/config.fish を Fish で構文チェック
+        # - dot_config/private_fish/config-mac.fish を Fish で構文チェック
+        # - dot_config/Brewfile を Ruby で構文チェック
+        # - dot_config/private_karabiner/private_karabiner.json を標準 JSON パーサーで解析
+        # - dot_config/herdr/config.toml を標準 TOML パーサーで解析
         run: |
           stylua --check dot_config/nvim
           fish --no-execute dot_config/private_fish/config.fish
@@ -62,7 +68,8 @@ jobs:
           PY
 
       - name: Start Neovim with a fresh profile
-        # 一時環境でプラグインの初回導入まで試す。
+        # dot_config/nvim/ を一時環境にコピーする。init.lua とそこから読み込まれる
+        # Lua 設定を使って Neovim を起動し、プラグインの初回導入まで試す。
         # 起動エラーが出た場合や ss が登録されなかった場合は失敗として扱う。
         run: |
           export XDG_CONFIG_HOME="$RUNNER_TEMP/nvim-profile/config"
