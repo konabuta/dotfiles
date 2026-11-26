@@ -1,11 +1,13 @@
 name: Dotfiles CI
 
+# PR はマージ先が main の場合に検証し、main への反映後も同じチェックを実行する。
 on:
   pull_request:
     branches: [main]
   push:
     branches: [main]
 
+# チェックアウトに必要な読み取り権限だけを付与する。
 permissions:
   contents: read
 
@@ -20,9 +22,11 @@ jobs:
     steps:
       - uses: actions/checkout@v7.0.1
         with:
+          # 検証コマンドを実行する前に、Git の認証情報を残さない。
           persist-credentials: false
 
       - name: Install check tools
+        # ツールの自動更新で検証結果が変わらないよう、バージョンを固定する。
         env:
           NEOVIM_VERSION: v0.12.6
           STYLUA_VERSION: v2.6.0
@@ -40,6 +44,7 @@ jobs:
           printf '%s\n' "$RUNNER_TEMP/nvim-linux-x86_64/bin" "$RUNNER_TEMP/stylua" >> "$GITHUB_PATH"
 
       - name: Check formatting and syntax
+        # macOS 用の設定も、Ubuntu 上でファイルの構文を確認する。
         run: |
           stylua --check dot_config/nvim
           fish --no-execute dot_config/private_fish/config.fish
@@ -57,6 +62,8 @@ jobs:
           PY
 
       - name: Start Neovim with a fresh profile
+        # 一時環境でプラグインの初回導入まで試す。
+        # 起動エラーが出た場合や ss が登録されなかった場合は失敗として扱う。
         run: |
           export XDG_CONFIG_HOME="$RUNNER_TEMP/nvim-profile/config"
           export XDG_DATA_HOME="$RUNNER_TEMP/nvim-profile/data"
